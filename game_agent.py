@@ -3,6 +3,7 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
+from operator import itemgetter
 
 
 class SearchTimeout(Exception):
@@ -170,16 +171,16 @@ class MinimaxPlayer(IsolationPlayer):
         # Return the best move from the last completed search iteration
         return best_move
 
-    def terminal_test(self, game):
+    def terminal_test(self, game, depth, current_depth):
         """ Return True if the game is over for the active player
         and False otherwise.
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        return len(game.get_legal_moves()) == 0
+        return len(game.get_legal_moves()) == 0 or current_depth == depth
 
-    def min_value(self, game):
+    def min_value(self, game, depth, current_depth):
         """ Return the value for a win (+1) if the game is over,
         otherwise return the minimum value over all legal child
         nodes.
@@ -187,13 +188,13 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        if self.terminal_test(game):
+        if self.terminal_test(game, depth, current_depth):
             return 1
         
         legal_moves = game.get_legal_moves()
-        return min([self.max_value(game.forecast_move(move)) for move in legal_moves])
+        return min([self.max_value(game.forecast_move(move), depth, current_depth + 1) for move in legal_moves])
 
-    def max_value(self, game):
+    def max_value(self, game, depth, current_depth):
         """ Return the value for a loss (-1) if the game is over,
         otherwise return the maximum value over all legal child
         nodes.
@@ -201,11 +202,11 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        if self.terminal_test(game):
+        if self.terminal_test(game, depth, current_depth):
             return -1
 
         legal_moves = game.get_legal_moves()
-        return max([self.min_value(game.forecast_move(move)) for move in legal_moves])
+        return max([self.min_value(game.forecast_move(move), depth, current_depth + 1) for move in legal_moves])
 
     def minimax(self, game, depth):
         """Implement depth-limited minimax search algorithm as described in
@@ -251,7 +252,7 @@ class MinimaxPlayer(IsolationPlayer):
 
         # TODO: finish this function!
         legal_moves = game.get_legal_moves()
-        legal_move_pairs = [(self.min_value(game.forecast_move(move)), move) for move in legal_moves]
+        legal_move_pairs = [(self.min_value(game.forecast_move(move), depth, 1), move) for move in legal_moves]
         
         # (score, move)
         best_pair = max(legal_move_pairs, key=itemgetter(0))
