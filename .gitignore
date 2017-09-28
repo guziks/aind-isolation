@@ -99,3 +99,5 @@ ENV/
 ### Custom
 .vscode/
 .idea/
+*.zip
+/*.json
