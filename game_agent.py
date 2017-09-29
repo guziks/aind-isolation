@@ -191,8 +191,10 @@ class MinimaxPlayer(IsolationPlayer):
         if self.terminal_test(game, depth, current_depth):
             return self.score(game, game.inactive_player)
         
-        legal_moves = game.get_legal_moves()
-        return min([self.max_value(game.forecast_move(move), depth, current_depth + 1) for move in legal_moves])
+        v = float("inf")
+        for move in game.get_legal_moves():
+            v = min(v, self.max_value(game.forecast_move(move), depth, current_depth + 1))
+        return v
 
     def max_value(self, game, depth, current_depth):
         """ Return the value for a loss if the game is over,
@@ -204,9 +206,11 @@ class MinimaxPlayer(IsolationPlayer):
         
         if self.terminal_test(game, depth, current_depth):
             return self.score(game, game.active_player)
-
-        legal_moves = game.get_legal_moves()
-        return max([self.min_value(game.forecast_move(move), depth, current_depth + 1) for move in legal_moves])
+        
+        v = float("-inf")
+        for move in game.get_legal_moves():
+            v = max(v, self.min_value(game.forecast_move(move), depth, current_depth + 1))
+        return v
 
     def minimax(self, game, depth):
         """Implement depth-limited minimax search algorithm as described in
@@ -250,15 +254,17 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        legal_moves = game.get_legal_moves()
-        legal_move_pairs = [(self.min_value(game.forecast_move(move), depth, 1), move) for move in legal_moves]
-        
-        # (score, move)
-        best_pair = max(legal_move_pairs, key=itemgetter(0))
+        START_DEPTH = 1
 
-        return best_pair[1]
-        # return legal_moves[0]
+        best_score = float("-inf")
+        best_move = (-1, -1)
+        for move in game.get_legal_moves():
+            score = self.min_value(game.forecast_move(move), depth, START_DEPTH)
+            if score > best_score:
+                best_score = score
+                best_move = move
+        return best_move
+
 
 class AlphaBetaPlayer(IsolationPlayer):
     """Game-playing agent that chooses a move using iterative deepening minimax
