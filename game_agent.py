@@ -171,16 +171,16 @@ class MinimaxPlayer(IsolationPlayer):
         # Return the best move from the last completed search iteration
         return best_move
 
-    def terminal_test(self, game, depth, current_depth):
+    def terminal_test(self, game, depth):
         """ Return True if the game is over for the active player
         and False otherwise.
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        return len(game.get_legal_moves()) == 0 or current_depth == depth
+        return len(game.get_legal_moves()) == 0 or depth == 1
 
-    def min_value(self, game, depth, current_depth):
+    def min_value(self, game, depth):
         """ Return the value for a win if the game is over,
         otherwise return the minimum value over all legal child
         nodes.
@@ -188,15 +188,15 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        if self.terminal_test(game, depth, current_depth):
+        if self.terminal_test(game, depth):
             return self.score(game, game.inactive_player)
         
         v = float("inf")
         for move in game.get_legal_moves():
-            v = min(v, self.max_value(game.forecast_move(move), depth, current_depth + 1))
+            v = min(v, self.max_value(game.forecast_move(move), depth - 1))
         return v
 
-    def max_value(self, game, depth, current_depth):
+    def max_value(self, game, depth):
         """ Return the value for a loss if the game is over,
         otherwise return the maximum value over all legal child
         nodes.
@@ -204,12 +204,12 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        if self.terminal_test(game, depth, current_depth):
+        if self.terminal_test(game, depth):
             return self.score(game, game.active_player)
         
         v = float("-inf")
         for move in game.get_legal_moves():
-            v = max(v, self.min_value(game.forecast_move(move), depth, current_depth + 1))
+            v = max(v, self.min_value(game.forecast_move(move), depth - 1))
         return v
 
     def minimax(self, game, depth):
@@ -254,12 +254,10 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        START_DEPTH = 1
-
         best_score = float("-inf")
         best_move = (-1, -1)
         for move in game.get_legal_moves():
-            score = self.min_value(game.forecast_move(move), depth, START_DEPTH)
+            score = self.min_value(game.forecast_move(move), depth)
             if score > best_score:
                 best_score = score
                 best_move = move
@@ -307,16 +305,16 @@ class AlphaBetaPlayer(IsolationPlayer):
         # TODO: finish this function!
         raise NotImplementedError
 
-    def terminal_test(self, game, depth, current_depth):
+    def terminal_test(self, game, depth):
         """ Return True if the game is over for the active player
         and False otherwise.
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        return len(game.get_legal_moves()) == 0 or current_depth == depth
+        return len(game.get_legal_moves()) == 0 or depth == 1
 
-    def min_value(self, game, depth, current_depth, alpha, beta):
+    def min_value(self, game, depth, alpha, beta):
         """ Return the value for a win if the game is over,
         otherwise return the minimum value over all legal child
         nodes.
@@ -324,18 +322,18 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        if self.terminal_test(game, depth, current_depth):
+        if self.terminal_test(game, depth):
             return self.score(game, game.inactive_player)
         
         v = float("inf")
         for move in game.get_legal_moves():
-            v = min(v, self.max_value(game.forecast_move(move), depth, current_depth + 1, alpha, beta))
+            v = min(v, self.max_value(game.forecast_move(move), depth - 1, alpha, beta))
             if v <= alpha:
                 return v
             beta = min(beta, v)
         return v
 
-    def max_value(self, game, depth, current_depth, alpha, beta):
+    def max_value(self, game, depth, alpha, beta):
         """ Return the value for a loss if the game is over,
         otherwise return the maximum value over all legal child
         nodes.
@@ -343,12 +341,12 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
         
-        if self.terminal_test(game, depth, current_depth):
+        if self.terminal_test(game, depth):
             return self.score(game, game.active_player)
 
         v = float("-inf")
         for move in game.get_legal_moves():
-            v = max(v, self.min_value(game.forecast_move(move), depth, current_depth + 1, alpha, beta))
+            v = max(v, self.min_value(game.forecast_move(move), depth - 1, alpha, beta))
             if v >= beta:
                 return v
             alpha = max(alpha, v)
@@ -402,11 +400,9 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        START_DEPTH = 1
-
         best_move = (-1, -1)
         for move in game.get_legal_moves():
-            v = self.min_value(game.forecast_move(move), depth, START_DEPTH, alpha, beta)
+            v = self.min_value(game.forecast_move(move), depth, alpha, beta)
             if v > alpha:
                 alpha = v
                 best_move = move
