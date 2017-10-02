@@ -97,7 +97,7 @@ ENV/
 # End of https://www.gitignore.io/api/python
 
 ### Custom
-.vscode/
 .idea/
 *.zip
 /*.json
+*.pdf
