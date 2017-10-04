@@ -70,16 +70,32 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
+    def near_borders(y, x):
+        return y == 0 or y == game.height or x == 0 or x == game.width
+    
+    def mid_to_late_game():
+        return len(game.get_blank_spaces()) < (0.8 * game.width * game.height)
+    
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
 
-    # Simple number of my moves
+    # Difference between my and opponent moves with penalty near borders
 
     own_moves = len(game.get_legal_moves(player))
-    return float(own_moves)
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    score = own_moves
+
+    y, x = game.get_player_location(player)
+    if mid_to_late_game() and near_borders(y, x):
+        score *= 0.3
+    
+    score -= opp_moves
+
+    return score
 
 
 def custom_score_3(game, player):
