@@ -95,7 +95,7 @@ def custom_score_2(game, player):
     
     score -= opp_moves
 
-    return score
+    return float(score)
 
 
 def custom_score_3(game, player):
