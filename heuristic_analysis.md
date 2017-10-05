@@ -11,30 +11,30 @@ Obtained results after performing 100 matches:
 | Match # |   Opponent  | AB_Improved | AB_Custom | AB_Custom_2 | AB_Custom_3 |
 |:-------:|:-----------:|:-----------:|:---------:|:-----------:|:-----------:|
 |    _    |      _      |   Won/Lost  |  Won/Lost |   Won/Lost  |   Won/Lost  |
-|    1    |    Random   |   163 - 37  |  165 - 35 |   164 - 36  |   162 - 38  |
-|    2    |   MM_Open   |   129 - 71  |  128 - 72 |   134 - 66  |   131 - 69  |
-|    3    |  MM_Center  |   158 - 42  |  156 - 44 |   155 - 45  |   151 - 49  |
-|    4    | MM_Improved |   125 - 75  |  120 - 80 |   130 - 70  |   117 - 83  |
-|    5    |   AB_Open   |   106 - 94  |  101 - 99 |   106 - 94  |   96 - 104  |
-|    6    |  AB_Center  |   122 - 78  |  104 - 96 |   107 - 93  |   112 - 88  |
-|    7    | AB_Improved |   96 - 104  |  97 - 103 |   95 - 105  |   90 - 110  |
+|    1    |    Random   |    153-47   |   169-31  |    163-37   |    169-31   |
+|    2    |   MM_Open   |    131-69   |   127-73  |    133-67   |    122-78   |
+|    3    |  MM_Center  |    153-47   |   151-49  |    150-50   |    156-44   |
+|    4    | MM_Improved |    135-65   |   128-72  |    134-66   |    128-72   |
+|    5    |   AB_Open   |    106-94   |   105-95  |    111-89   |    98-102   |
+|    6    |  AB_Center  |    117-83   |   120-80  |    120-80   |    111-89   |
+|    7    | AB_Improved |    96-104   |   107-93  |    102-98   |    94-106   |
 |    _    |      _      |      _      |     _     |      _      |      _      |
-|    _    |  Win Rate:  |    64.2%    |   62.2%   |    63.6%    |    61.4%    |
+|    _    |  Win Rate:  |    63.6%    |   64.8%   |    65.2%    |    62.7%    |
 
 ## Observation
 
-All evaluation functions performed very close to each other. `AB_Custom_2` closest to reference `AB_Improved` with win rate differences:
+All evaluation functions performed very close to each other. `AB_Custom_2` and `AB_Improved` are closest opponents with win rate differences:
 
-- overall: 0.6% (64.2-63.6)
-- against each other: 5% ((105-95)/200)
+- overall: 1.6% (65.2-63.6)
+- against each other: 2% ((102-98)/200)
 
 ## Analysis
 
-All of tested evaluation functions are fast to compute. Semantically:
+All of tested evaluation functions are fast to compute. Results comparison to `AB_Improved`:
 
-- `AB_Custom` not much different to `AB_Improved`, a bit more sensitive to opponent, as a result - no noticeable gain.
-- `AB_Custom_2` tries to avoid borders of a field in a middle of a game with assumption that borders reduce mobility. Achieves results comparable with `AB_Improved`.
-- `AB_Custom_3` tries to be as close to opponent as possible. Assumption - this could work like in regular (not L shaped) isolation game. Overall performed 2.8% worse than `AB_Improved`.
+- `AB_Custom` a bit more sensitive to opponent version of `AB_Improved`. Result: 1.2% better (64.8-63.6).
+- `AB_Custom_2` tries to avoid borders of a field in a middle of a game with assumption that borders reduce mobility. Result: 1.6% better (65.2-63.6).
+- `AB_Custom_3` tries to be as close to opponent as possible with assumption that this could work like in regular (not L shaped) isolation game. Result: 0.9% worse (63.6-62.7)
 
 ## Conclusion
 
