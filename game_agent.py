@@ -3,7 +3,25 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
+import logging
 from operator import itemgetter
+
+LOG_LABEL_USR = 'usr'
+LOG_LABEL_CPU = 'cpu'
+
+def create_logger(label):
+    log = logging.getLogger(label)
+    log.setLevel(logging.INFO)
+
+    fh = logging.FileHandler(filename = 'depth_{0}.csv'.format(label), mode = 'w')
+    fh.setLevel(logging.INFO)
+    fh.setFormatter(logging.Formatter('%(name)s,%(message)s'))
+    log.addHandler(fh)
+
+    return log
+
+log_usr = create_logger(LOG_LABEL_USR)
+log_cpu = create_logger(LOG_LABEL_CPU)
 
 
 class SearchTimeout(Exception):
@@ -47,6 +65,11 @@ def custom_score(game, player):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     return float(own_moves - 2*opp_moves)
 
+def near_borders(game, y, x):
+        return y == 0 or y == game.height or x == 0 or x == game.width
+    
+def mid_to_late_game(game):
+    return len(game.get_blank_spaces()) < (0.8 * game.width * game.height)
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -70,12 +93,6 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    def near_borders(y, x):
-        return y == 0 or y == game.height or x == 0 or x == game.width
-    
-    def mid_to_late_game():
-        return len(game.get_blank_spaces()) < (0.8 * game.width * game.height)
-    
     if game.is_loser(player):
         return float("-inf")
 
@@ -90,7 +107,7 @@ def custom_score_2(game, player):
     score = own_moves
 
     y, x = game.get_player_location(player)
-    if mid_to_late_game() and near_borders(y, x):
+    if mid_to_late_game(game) and near_borders(game, y, x):
         score *= 0.3
     
     score -= opp_moves
@@ -356,6 +373,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             # raised when the timer is about to expire.
             depth = 1
             while True:
+                self.log_player_depth(game, depth) 
                 best_move = self.alphabeta(game, depth)
                 depth += 1
 
@@ -365,6 +383,12 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         # Return the best move from the last completed search iteration
         return best_move
+
+    def log_player_depth(self, game, depth):
+        log = log_usr
+        if hasattr(game.active_player, "_cpu"):
+            log = log_cpu
+        log.info(depth)
 
     def terminal_test(self, game, depth):
         """ Return True if the game is over for the active player

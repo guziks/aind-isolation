@@ -48,6 +48,8 @@ def play_round(cpu_agent, test_agents, win_counts, num_matches):
     forfeit_count = 0
     for _ in range(num_matches):
 
+        cpu_agent.player._cpu = True
+
         games = sum([[Board(cpu_agent.player, agent.player),
                       Board(agent.player, cpu_agent.player)]
                     for agent in test_agents], [])
