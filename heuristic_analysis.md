@@ -36,6 +36,16 @@ All of tested evaluation functions are fast to compute. Results comparison to `A
 - `AB_Custom_2` tries to avoid borders of a field in a middle of a game with assumption that borders reduce mobility. Result: 1.6% better (65.2-63.6).
 - `AB_Custom_3` tries to be as close to opponent as possible with assumption that this could work like in regular (not L shaped) isolation game. Result: 0.9% worse (63.6-62.7)
 
+Average depth of search was measured for:
+
+- `AB_Improved`: 6.6
+- `AB_Custom_2`: 6.5
+
 ## Conclusion
 
-Among tested evaluation functions #2 performed best and it is recommended.
+Among tested evaluation functions #2 performed best and it is recommended, reasons:
+
+- win rate is 1.6% higher compared to `AB_Improved`
+- despite average depth is 0.1 (6.6-6.5) less compared to `AB_Improved` it manages to win, so it predicts game outcome better
+- it is more complex to compute than `AB_Improved` (up to 3 additional multiplications and 5 comparisons) but not overly complicated (does not make additional game tree traverses)
+- there is space for further tuning and improving
